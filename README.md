@@ -1,50 +1,43 @@
-# Karis Recipe Book PWA v4
+# Karis Recipe Book PWA v4 Offline
 
-Version 4 adds optional Firebase cloud sync while keeping the app fully usable offline/local.
+This is the simplified Version 4 with Firebase and recipe photos removed.
 
-## New in v4
+## Included Features
 
+- Add recipes
+- Edit recipes
+- Delete recipes
+- Favorite recipes
+- Search recipes
+- Dynamic category filters
+- Weekly meal planner
+- Grocery list generator from selected recipes
+- Grocery list generator from the meal plan
+- Copy recipe text
+- Copy grocery list
+- Export JSON backup
+- Import JSON backup
+- Installable PWA
+- Offline support through service worker
+
+## Removed from this version
+
+- Firebase Authentication
+- Firestore
+- Firebase Storage
 - Cloud Sync tab
-- Google sign-in button
-- Email/password sign-in and account creation buttons
-- Push local data to Firebase
-- Pull cloud data to the browser
-- Firestore recipe/app-state sync
-- Firebase Storage photo sync
-- Firebase rules starter file
+- Google Sign-In
+- Email/password login
+- Recipe photo upload
+- IndexedDB photo storage
 
-## Files to edit for Firebase
+## GitHub Pages Upload
 
-Open:
+1. Unzip this package.
+2. Upload all files to the root of your GitHub repository.
+3. Commit the changes.
+4. GitHub Pages will serve the updated version.
 
-`js/firebase-config.js`
+## Storage Notes
 
-Replace `window.KARIS_FIREBASE_CONFIG = null;` with your Firebase web app config.
-
-## Firebase services to enable
-
-In Firebase Console, enable:
-
-1. Authentication
-   - Google provider if using Google sign-in
-   - Email/password provider if using email sign-in
-2. Firestore Database
-3. Storage
-
-## Data layout
-
-Firestore:
-
-- `users/{uid}/recipes/{recipeId}`
-- `users/{uid}/appState/planner`
-- `users/{uid}/appState/grocery`
-
-Storage:
-
-- `users/{uid}/photos/{photoKey}.txt`
-
-Photos are uploaded as data URLs so the app can restore them back into IndexedDB on pull.
-
-## Important
-
-This is a client-side GitHub Pages-friendly implementation. Do not put private service account keys in this project. Only use the Firebase web app config from the Firebase console.
+This version stores app data in browser `localStorage`. Use Export Backup regularly if you want a portable copy of the recipe book.
