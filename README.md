@@ -1,35 +1,50 @@
-# Karis Recipe Book PWA v3
+# Karis Recipe Book PWA v4
 
-This version implements the recommended cleanup and storage improvements.
+Version 4 adds optional Firebase cloud sync while keeping the app fully usable offline/local.
 
-## Added in v3
+## New in v4
 
-- Refactored JavaScript with centralized app state
-- Cached DOM references
-- Shared JSON save/load helpers
-- IndexedDB photo storage through `js/idb.js`
-- Export backup to JSON
-- Import backup from JSON
-- Backup includes recipes, planner, grocery selections, and photos
-- Firebase-ready config placeholder in `js/firebase-config.js`
-- Cleaner service worker cache list
+- Cloud Sync tab
+- Google sign-in button
+- Email/password sign-in and account creation buttons
+- Push local data to Firebase
+- Pull cloud data to the browser
+- Firestore recipe/app-state sync
+- Firebase Storage photo sync
+- Firebase rules starter file
 
-## GitHub Pages Upload
+## Files to edit for Firebase
 
-1. Unzip this package.
-2. Upload the contents to the root of your GitHub repository.
-3. Commit the changes.
-4. GitHub Pages will serve the updated app from the selected branch/root.
-
-## Storage Notes
-
-Recipe text, meal planner choices, and grocery selections are stored in `localStorage`.
-Recipe photos are stored in IndexedDB, which is better suited for larger browser data than localStorage.
-
-## Cloud Sync Notes
-
-Firebase is not enabled by default because it requires your Firebase project values. The placeholder file is:
+Open:
 
 `js/firebase-config.js`
 
-When you are ready to add real cloud sync, replace the placeholder object in that file with your Firebase web app config, then add Firebase Auth, Firestore, and Storage logic.
+Replace `window.KARIS_FIREBASE_CONFIG = null;` with your Firebase web app config.
+
+## Firebase services to enable
+
+In Firebase Console, enable:
+
+1. Authentication
+   - Google provider if using Google sign-in
+   - Email/password provider if using email sign-in
+2. Firestore Database
+3. Storage
+
+## Data layout
+
+Firestore:
+
+- `users/{uid}/recipes/{recipeId}`
+- `users/{uid}/appState/planner`
+- `users/{uid}/appState/grocery`
+
+Storage:
+
+- `users/{uid}/photos/{photoKey}.txt`
+
+Photos are uploaded as data URLs so the app can restore them back into IndexedDB on pull.
+
+## Important
+
+This is a client-side GitHub Pages-friendly implementation. Do not put private service account keys in this project. Only use the Firebase web app config from the Firebase console.

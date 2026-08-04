@@ -1,10 +1,9 @@
-// Optional Firebase placeholder.
-// This app works without Firebase. When you are ready for cloud sync, create a Firebase project
-// and replace the values below with your Firebase web app config.
+// Firebase is optional. The app works locally without this.
+// To enable Version 4 cloud sync, replace null with your Firebase web app config.
 
 window.KARIS_FIREBASE_CONFIG = null;
 
-/* Example shape:
+/* Example:
 window.KARIS_FIREBASE_CONFIG = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",

@@ -18,7 +18,7 @@
       <div>
         <p class="eyebrow">Personal cookbook</p>
         <h1>Karis Recipe Book</h1>
-        <p class="subtitle">Recipes, photos, meal planning, grocery lists, and backup tools.</p>
+        <p class="subtitle">Recipes, photos, meal planning, grocery lists, backups, and optional Firebase cloud sync.</p>
       </div>
       <button id="installBtn" class="install-btn hidden">Install App</button>
     </header>
@@ -28,6 +28,7 @@
       <button class="tab" data-view="plannerView">Meal Planner</button>
       <button class="tab" data-view="groceryView">Grocery List</button>
       <button class="tab" data-view="backupView">Backup</button>
+      <button class="tab" data-view="cloudView">Cloud Sync</button>
     </nav>
 
     <section id="recipesView" class="view active-view">
@@ -41,54 +42,31 @@
           <div class="section-title">
             <div>
               <h2 id="formTitle">Add Recipe</h2>
-              <p>Photos are stored in IndexedDB instead of localStorage.</p>
+              <p>Photos are stored locally in IndexedDB and can be synced to Firebase Storage.</p>
             </div>
             <button id="cancelEditBtn" class="ghost-btn hidden" type="button">Cancel edit</button>
           </div>
 
           <form id="recipeForm">
             <input id="editId" type="hidden" />
-
-            <label>Recipe name
-              <input id="name" required placeholder="Creamy garlic chicken" />
-            </label>
-
+            <label>Recipe name<input id="name" required placeholder="Creamy garlic chicken" /></label>
             <label>Category
               <input id="category" list="categoryOptions" placeholder="Dinner" />
               <datalist id="categoryOptions"></datalist>
             </label>
-
-            <label>Source URL
-              <input id="url" type="url" placeholder="Paste TikTok, YouTube, Instagram, or website link" />
-            </label>
-
-            <label>Photo
-              <input id="photoInput" type="file" accept="image/*" />
-            </label>
+            <label>Source URL<input id="url" type="url" placeholder="Paste TikTok, YouTube, Instagram, or website link" /></label>
+            <label>Photo<input id="photoInput" type="file" accept="image/*" /></label>
             <img id="photoPreview" class="photo-preview hidden" alt="Recipe photo preview" />
-
-            <label>Ingredients <span>one per line</span>
-              <textarea id="ingredients" rows="6" placeholder="2 chicken breasts\n1 cup heavy cream\n4 cloves garlic"></textarea>
-            </label>
-
-            <label>Instructions <span>one step per line</span>
-              <textarea id="instructions" rows="6" placeholder="Season chicken\nSear in skillet\nAdd cream and garlic\nSimmer 15 minutes"></textarea>
-            </label>
-
-            <label>Notes
-              <textarea id="notes" rows="3" placeholder="Family tweaks, serving ideas, substitutions..."></textarea>
-            </label>
-
+            <label>Ingredients <span>one per line</span><textarea id="ingredients" rows="6" placeholder="2 chicken breasts\n1 cup heavy cream\n4 cloves garlic"></textarea></label>
+            <label>Instructions <span>one step per line</span><textarea id="instructions" rows="6" placeholder="Season chicken\nSear in skillet\nAdd cream and garlic\nSimmer 15 minutes"></textarea></label>
+            <label>Notes<textarea id="notes" rows="3" placeholder="Family tweaks, serving ideas, substitutions..."></textarea></label>
             <button id="saveBtn" class="primary-btn" type="submit">Save Recipe</button>
           </form>
         </section>
 
         <section class="recipes-area">
           <div class="section-title list-title">
-            <div>
-              <h2>Saved Recipes</h2>
-              <p id="recipeCount">0 recipes</p>
-            </div>
+            <div><h2>Saved Recipes</h2><p id="recipeCount">0 recipes</p></div>
             <button id="clearSampleBtn" class="ghost-btn">Clear sample</button>
           </div>
           <div id="recipeList" class="recipe-list"></div>
@@ -99,10 +77,7 @@
     <section id="plannerView" class="view">
       <section class="card planner-card">
         <div class="section-title">
-          <div>
-            <h2>Weekly Meal Planner</h2>
-            <p>Pick recipes for each day, then generate a matching grocery list.</p>
-          </div>
+          <div><h2>Weekly Meal Planner</h2><p>Pick recipes for each day, then generate a matching grocery list.</p></div>
           <button id="clearPlannerBtn" class="ghost-btn">Clear week</button>
         </div>
         <div id="plannerGrid" class="planner-grid"></div>
@@ -112,19 +87,10 @@
     <section id="groceryView" class="view">
       <section class="card grocery-card">
         <div class="section-title">
-          <div>
-            <h2>Grocery List</h2>
-            <p>Build from selected recipes or your meal plan.</p>
-          </div>
-          <div class="button-row">
-            <button id="groceryFromPlannerBtn" class="ghost-btn">From meal plan</button>
-            <button id="copyGroceryBtn" class="ghost-btn">Copy list</button>
-          </div>
+          <div><h2>Grocery List</h2><p>Build from selected recipes or your meal plan.</p></div>
+          <div class="button-row"><button id="groceryFromPlannerBtn" class="ghost-btn">From meal plan</button><button id="copyGroceryBtn" class="ghost-btn">Copy list</button></div>
         </div>
-        <div class="grocery-builder">
-          <select id="groceryRecipeSelect"></select>
-          <button id="addRecipeToGroceryBtn" class="primary-btn small">Add Recipe</button>
-        </div>
+        <div class="grocery-builder"><select id="groceryRecipeSelect"></select><button id="addRecipeToGroceryBtn" class="primary-btn small">Add Recipe</button></div>
         <div id="selectedRecipes" class="selected-recipes"></div>
         <div id="groceryList" class="grocery-list"></div>
       </section>
@@ -132,29 +98,45 @@
 
     <section id="backupView" class="view">
       <section class="card backup-card">
-        <div class="section-title">
-          <div>
-            <h2>Backup and Sync</h2>
-            <p>Export/import backups now. Firebase sync is scaffolded for later setup.</p>
-          </div>
-        </div>
-
+        <div class="section-title"><div><h2>Backup</h2><p>Export/import everything, including photos.</p></div></div>
         <div class="backup-grid">
           <article class="backup-panel">
-            <h3>Local backup</h3>
-            <p>Download a JSON backup that includes recipes, planner data, grocery selections, and images.</p>
-            <div class="button-row left">
-              <button id="exportBackupBtn" class="primary-btn small">Export backup</button>
-              <label class="file-button">Import backup
-                <input id="importBackupInput" type="file" accept="application/json" />
-              </label>
+            <h3>Local JSON backup</h3>
+            <p>Download or restore recipes, planner data, grocery selections, and images.</p>
+            <div class="button-row left"><button id="exportBackupBtn" class="primary-btn small">Export backup</button><label class="file-button">Import backup<input id="importBackupInput" type="file" accept="application/json" /></label></div>
+          </article>
+          <article class="backup-panel">
+            <h3>Storage design</h3>
+            <p>Recipe text stays in browser storage. Photos use IndexedDB locally. Firebase can sync both when configured.</p>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <section id="cloudView" class="view">
+      <section class="card backup-card">
+        <div class="section-title"><div><h2>Firebase Cloud Sync</h2><p id="cloudStatus">Firebase is not configured yet.</p></div></div>
+        <div class="backup-grid">
+          <article class="backup-panel">
+            <h3>Sign in</h3>
+            <p>Use Google sign-in, or email/password once those providers are enabled in Firebase Authentication.</p>
+            <div class="button-row left"><button id="googleSignInBtn" class="primary-btn small">Sign in with Google</button><button id="signOutBtn" class="ghost-btn">Sign out</button></div>
+            <div class="email-auth">
+              <input id="emailInput" type="email" placeholder="Email address" />
+              <input id="passwordInput" type="password" placeholder="Password" />
+              <div class="button-row left"><button id="emailSignInBtn" class="ghost-btn">Email sign in</button><button id="emailCreateBtn" class="ghost-btn">Create account</button></div>
             </div>
           </article>
-
           <article class="backup-panel">
-            <h3>Cloud sync placeholder</h3>
-            <p>This app includes a clean Firebase-ready structure, but Firebase is disabled until you add your project config.</p>
-            <pre><code>js/firebase-config.js</code></pre>
+            <h3>Sync controls</h3>
+            <p>Push sends this browser's current data to Firebase. Pull replaces this browser's data with Firebase data.</p>
+            <div class="button-row left"><button id="pushCloudBtn" class="primary-btn small">Push local to cloud</button><button id="pullCloudBtn" class="ghost-btn">Pull cloud to local</button></div>
+            <p id="lastSyncText" class="mini-note">No sync has run in this browser.</p>
+          </article>
+          <article class="backup-panel full-width">
+            <h3>Setup file</h3>
+            <p>Add your Firebase config in <code>js/firebase-config.js</code>. The app still works locally if this stays blank.</p>
+            <pre><code>window.KARIS_FIREBASE_CONFIG = { ... };</code></pre>
           </article>
         </div>
       </section>
@@ -164,33 +146,18 @@
   <template id="recipeCardTemplate">
     <article class="recipe-card card">
       <div class="photo-wrap"><img class="recipe-photo" alt="Recipe photo" /></div>
-      <div class="recipe-top">
-        <div>
-          <p class="category-pill"></p>
-          <h3></h3>
-        </div>
-        <button class="favorite-button" title="Toggle favorite">☆</button>
-      </div>
+      <div class="recipe-top"><div><p class="category-pill"></p><h3></h3></div><button class="favorite-button" title="Toggle favorite">☆</button></div>
       <a class="source-link" target="_blank" rel="noopener">Open source</a>
-      <div class="recipe-section ingredients-section">
-        <h4>Ingredients</h4>
-        <ul></ul>
-      </div>
-      <div class="recipe-section instructions-section">
-        <h4>Instructions</h4>
-        <ol></ol>
-      </div>
+      <div class="recipe-section ingredients-section"><h4>Ingredients</h4><ul></ul></div>
+      <div class="recipe-section instructions-section"><h4>Instructions</h4><ol></ol></div>
       <p class="notes"></p>
-      <div class="card-actions">
-        <button class="copy-btn">Copy</button>
-        <button class="edit-btn">Edit</button>
-        <button class="delete-btn">Delete</button>
-      </div>
+      <div class="card-actions"><button class="copy-btn">Copy</button><button class="edit-btn">Edit</button><button class="delete-btn">Delete</button></div>
     </article>
   </template>
 
   <script src="js/idb.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/firebase-service.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

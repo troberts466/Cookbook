@@ -1,7 +1,7 @@
 {
   "name": "Karis Recipe Book",
   "short_name": "Recipes",
-  "description": "A personal recipe book PWA with photos, backups, meal planning, and grocery lists.",
+  "description": "A personal recipe book PWA with Firebase cloud sync.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
