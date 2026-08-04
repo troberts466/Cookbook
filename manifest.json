@@ -1,13 +1,13 @@
 {
   "name": "Karis Recipe Book",
   "short_name": "Recipes",
-  "description": "An offline-first recipe book PWA with recipes, favorites, meal planning, grocery lists, and backup tools.",
+  "description": "A mobile-first offline recipe book PWA with recipes, meal planning, grocery lists, and backup tools.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "theme_color": "#111827",
-  "background_color": "#0f172a",
+  "theme_color": "#fff8f0",
+  "background_color": "#fff8f0",
   "icons": [
     {
       "src": "icons/icon-192.png",

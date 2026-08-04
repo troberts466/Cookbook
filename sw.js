@@ -1,4 +1,4 @@
-const CACHE_NAME = "karis-recipe-book-v4-offline";
+const CACHE_NAME = "karis-recipe-book-v5-mobile";
 const APP_SHELL = [
   "./",
   "./index.html",

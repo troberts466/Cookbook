@@ -2,180 +2,203 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Karis Recipe Book</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" />
-  <meta name="theme-color" content="#111827" />
+  <meta name="theme-color" content="#fff8f0" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Recipes" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
 </head>
 <body>
   <div class="app-shell">
-    <header class="hero">
+    <header class="top-bar">
       <div>
-        <p class="eyebrow">Personal cookbook</p>
-        <h1>Karis Recipe Book</h1>
-        <p class="subtitle">Offline-first recipes, meal planning, grocery lists, and backup tools.</p>
+        <p class="eyebrow">Karis Recipe Book</p>
+        <h1 id="pageTitle">Home</h1>
       </div>
-      <button id="installBtn" class="install-btn hidden">Install App</button>
+      <button id="installBtn" class="small-pill hidden">Install</button>
     </header>
 
-    <nav class="tabs card" aria-label="App sections">
-      <button class="tab active" data-view="recipesView">Recipes</button>
-      <button class="tab" data-view="plannerView">Meal Planner</button>
-      <button class="tab" data-view="groceryView">Grocery List</button>
-      <button class="tab" data-view="backupView">Backup</button>
-    </nav>
-
-    <section id="recipesView" class="view active-view">
-      <section class="controls card">
-        <input id="searchInput" type="search" placeholder="Search recipes, ingredients, notes, categories..." />
-        <div id="categoryChips" class="filter-row"></div>
-      </section>
-
-      <main class="grid-layout">
-        <section class="card form-card">
-          <div class="section-title">
-            <div>
-              <h2 id="formTitle">Add Recipe</h2>
-              <p>Simple text-only recipe saving. No Firebase. No photos.</p>
-            </div>
-            <button id="cancelEditBtn" class="ghost-btn hidden" type="button">Cancel edit</button>
+    <main>
+      <section id="homeView" class="view active-view">
+        <section class="hero-card card">
+          <div>
+            <p id="greetingText" class="hero-greeting">Good evening 👋</p>
+            <h2>Your cozy cookbook</h2>
+            <p class="muted">Plan meals, save family favorites, and build grocery lists.</p>
           </div>
-
-          <form id="recipeForm">
-            <input id="editId" type="hidden" />
-
-            <label>Recipe name
-              <input id="name" required placeholder="Creamy garlic chicken" />
-            </label>
-
-            <label>Category
-              <input id="category" list="categoryOptions" placeholder="Dinner" />
-              <datalist id="categoryOptions"></datalist>
-            </label>
-
-            <label>Source URL
-              <input id="url" type="url" placeholder="Paste TikTok, YouTube, Instagram, or website link" />
-            </label>
-
-            <label>Ingredients <span>one per line</span>
-              <textarea id="ingredients" rows="6" placeholder="2 chicken breasts\n1 cup heavy cream\n4 cloves garlic"></textarea>
-            </label>
-
-            <label>Instructions <span>one step per line</span>
-              <textarea id="instructions" rows="6" placeholder="Season chicken\nSear in skillet\nAdd cream and garlic\nSimmer 15 minutes"></textarea>
-            </label>
-
-            <label>Notes
-              <textarea id="notes" rows="3" placeholder="Family tweaks, serving ideas, substitutions..."></textarea>
-            </label>
-
-            <button id="saveBtn" class="primary-btn" type="submit">Save Recipe</button>
-          </form>
+          <button id="homeAddRecipeBtn" class="primary-btn">+ Add Recipe</button>
         </section>
 
-        <section class="recipes-area">
-          <div class="section-title list-title">
+        <section class="stats-grid">
+          <article class="stat-card card"><span>📚</span><strong id="totalRecipesStat">0</strong><p>Recipes</p></article>
+          <article class="stat-card card"><span>⭐</span><strong id="favoriteRecipesStat">0</strong><p>Favorites</p></article>
+          <article class="stat-card card"><span>📅</span><strong id="plannedMealsStat">0</strong><p>Planned</p></article>
+        </section>
+
+        <section class="section-block">
+          <div class="section-heading">
+            <h2>Quick actions</h2>
+          </div>
+          <div class="quick-grid">
+            <button class="quick-card card" data-jump="recipesView" data-filter="favorites"><span>❤️</span><strong>Favorites</strong><small>Go-to recipes</small></button>
+            <button class="quick-card card" data-jump="plannerView"><span>🍽️</span><strong>Meal Plan</strong><small>This week's meals</small></button>
+            <button class="quick-card card" data-jump="groceryView"><span>🛒</span><strong>Grocery List</strong><small>Shopping checklist</small></button>
+            <button class="quick-card card" data-jump="recipesView"><span>📚</span><strong>Collections</strong><small>Browse categories</small></button>
+          </div>
+        </section>
+
+        <section class="section-block">
+          <div class="section-heading">
+            <h2>Collections</h2>
+            <button class="text-btn" data-jump="recipesView">View all</button>
+          </div>
+          <div id="homeCollections" class="collection-grid"></div>
+        </section>
+      </section>
+
+      <section id="recipesView" class="view">
+        <section class="search-card card">
+          <input id="searchInput" type="search" placeholder="Search recipes..." />
+        </section>
+        <section class="section-block">
+          <div class="section-heading">
+            <h2>Collections</h2>
+            <button id="showAllRecipesBtn" class="text-btn">All recipes</button>
+          </div>
+          <div id="categoryChips" class="collection-grid"></div>
+        </section>
+        <section class="section-block">
+          <div class="section-heading">
             <div>
-              <h2>Saved Recipes</h2>
-              <p id="recipeCount">0 recipes</p>
+              <h2>Recipes</h2>
+              <p id="recipeCount" class="muted">0 recipes</p>
             </div>
-            <button id="clearSampleBtn" class="ghost-btn">Clear sample</button>
           </div>
           <div id="recipeList" class="recipe-list"></div>
         </section>
-      </main>
-    </section>
-
-    <section id="plannerView" class="view">
-      <section class="card planner-card">
-        <div class="section-title">
-          <div>
-            <h2>Weekly Meal Planner</h2>
-            <p>Pick recipes for each day, then generate a matching grocery list.</p>
-          </div>
-          <button id="clearPlannerBtn" class="ghost-btn">Clear week</button>
-        </div>
-        <div id="plannerGrid" class="planner-grid"></div>
       </section>
-    </section>
 
-    <section id="groceryView" class="view">
-      <section class="card grocery-card">
-        <div class="section-title">
+      <section id="plannerView" class="view">
+        <section class="card planner-header">
           <div>
-            <h2>Grocery List</h2>
-            <p>Build from selected recipes or your meal plan.</p>
+            <h2>This week</h2>
+            <p class="muted">Choose meals for each day.</p>
+          </div>
+          <button id="clearPlannerBtn" class="small-pill danger-light">Clear</button>
+        </section>
+        <div id="plannerGrid" class="planner-list"></div>
+      </section>
+
+      <section id="groceryView" class="view">
+        <section class="card grocery-card">
+          <div class="section-heading no-margin">
+            <div>
+              <h2>Grocery List</h2>
+              <p class="muted">Build from recipes or your meal plan.</p>
+            </div>
+          </div>
+          <div class="grocery-builder">
+            <select id="groceryRecipeSelect"></select>
+            <button id="addRecipeToGroceryBtn" class="primary-btn small">Add</button>
           </div>
           <div class="button-row">
-            <button id="groceryFromPlannerBtn" class="ghost-btn">From meal plan</button>
-            <button id="copyGroceryBtn" class="ghost-btn">Copy list</button>
+            <button id="groceryFromPlannerBtn" class="small-pill">From meal plan</button>
+            <button id="copyGroceryBtn" class="small-pill">Copy list</button>
           </div>
-        </div>
-        <div class="grocery-builder">
-          <select id="groceryRecipeSelect"></select>
-          <button id="addRecipeToGroceryBtn" class="primary-btn small">Add Recipe</button>
-        </div>
-        <div id="selectedRecipes" class="selected-recipes"></div>
+          <div id="selectedRecipes" class="selected-recipes"></div>
+        </section>
         <div id="groceryList" class="grocery-list"></div>
       </section>
-    </section>
 
-    <section id="backupView" class="view">
-      <section class="card backup-card">
-        <div class="section-title">
-          <div>
-            <h2>Backup and Restore</h2>
-            <p>Export a JSON backup or restore from one. This is the replacement for cloud sync right now.</p>
-          </div>
-        </div>
-
-        <div class="backup-grid">
-          <article class="backup-panel">
-            <h3>Export backup</h3>
-            <p>Download recipes, categories, favorites, meal planner data, and grocery selections.</p>
-            <button id="exportBackupBtn" class="primary-btn small">Export backup</button>
-          </article>
-
-          <article class="backup-panel">
-            <h3>Import backup</h3>
-            <p>Restore a backup JSON file on this device or another device.</p>
+      <section id="moreView" class="view">
+        <section class="card backup-card">
+          <h2>Backup and restore</h2>
+          <p class="muted">Export a copy of the recipe book or restore from a JSON backup.</p>
+          <div class="backup-actions">
+            <button id="exportBackupBtn" class="primary-btn">Export backup</button>
             <label class="file-button">Import backup
               <input id="importBackupInput" type="file" accept="application/json" />
             </label>
-          </article>
-        </div>
+          </div>
+        </section>
+        <section class="card about-card">
+          <h2>About this version</h2>
+          <p class="muted">Mobile-first, offline-first, no Firebase, no photos. Data is saved in this browser, so use backup/export when needed.</p>
+        </section>
       </section>
-    </section>
+    </main>
+
+    <button id="fabAddRecipe" class="fab" aria-label="Add recipe">+</button>
+
+    <nav class="bottom-nav" aria-label="Primary navigation">
+      <button class="nav-item active" data-view="homeView" data-title="Home"><span>🏠</span><small>Home</small></button>
+      <button class="nav-item" data-view="recipesView" data-title="Recipes"><span>📚</span><small>Recipes</small></button>
+      <button class="nav-item" data-view="plannerView" data-title="Planner"><span>📅</span><small>Planner</small></button>
+      <button class="nav-item" data-view="groceryView" data-title="Grocery"><span>🛒</span><small>Grocery</small></button>
+      <button class="nav-item" data-view="moreView" data-title="More"><span>⚙️</span><small>More</small></button>
+    </nav>
   </div>
+
+  <section id="recipeModal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Recipe editor</p>
+          <h2 id="formTitle">Add Recipe</h2>
+        </div>
+        <button id="closeModalBtn" class="icon-btn">✕</button>
+      </div>
+
+      <form id="recipeForm" class="recipe-form">
+        <input id="editId" type="hidden" />
+        <label>Recipe name<input id="name" required placeholder="Creamy garlic chicken" /></label>
+        <label>Category
+          <input id="category" list="categoryOptions" placeholder="Dinner" />
+          <datalist id="categoryOptions"></datalist>
+        </label>
+        <label>Source URL<input id="url" type="url" placeholder="TikTok, YouTube, website, or notes link" /></label>
+        <label>Ingredients <span>one per line</span><textarea id="ingredients" rows="5" placeholder="2 chicken breasts\n1 cup heavy cream\n4 cloves garlic"></textarea></label>
+        <label>Instructions <span>one step per line</span><textarea id="instructions" rows="5" placeholder="Season chicken\nSear in skillet\nAdd cream and garlic"></textarea></label>
+        <label>Notes<textarea id="notes" rows="3" placeholder="Family tweaks, substitutions, serving ideas..."></textarea></label>
+        <div class="modal-actions">
+          <button id="cancelEditBtn" type="button" class="small-pill hidden">Cancel edit</button>
+          <button id="saveBtn" class="primary-btn" type="submit">Save Recipe</button>
+        </div>
+      </form>
+    </div>
+  </section>
 
   <template id="recipeCardTemplate">
     <article class="recipe-card card">
-      <div class="recipe-top">
-        <div>
-          <p class="category-pill"></p>
-          <h3></h3>
+      <div class="recipe-main">
+        <div class="recipe-emoji"></div>
+        <div class="recipe-content">
+          <div class="recipe-title-row">
+            <div>
+              <p class="category-pill"></p>
+              <h3></h3>
+            </div>
+            <button class="favorite-button" title="Toggle favorite">☆</button>
+          </div>
+          <a class="source-link" target="_blank" rel="noopener">Open source ↗</a>
+          <details>
+            <summary>Ingredients and instructions</summary>
+            <div class="recipe-section"><h4>Ingredients</h4><ul></ul></div>
+            <div class="recipe-section"><h4>Instructions</h4><ol></ol></div>
+            <p class="notes"></p>
+          </details>
+          <div class="card-actions">
+            <button class="copy-btn">Copy</button>
+            <button class="edit-btn">Edit</button>
+            <button class="delete-btn">Delete</button>
+          </div>
         </div>
-        <button class="favorite-button" title="Toggle favorite">☆</button>
-      </div>
-      <a class="source-link" target="_blank" rel="noopener">Open source</a>
-      <div class="recipe-section ingredients-section">
-        <h4>Ingredients</h4>
-        <ul></ul>
-      </div>
-      <div class="recipe-section instructions-section">
-        <h4>Instructions</h4>
-        <ol></ol>
-      </div>
-      <p class="notes"></p>
-      <div class="card-actions">
-        <button class="copy-btn">Copy</button>
-        <button class="edit-btn">Edit</button>
-        <button class="delete-btn">Delete</button>
       </div>
     </article>
   </template>

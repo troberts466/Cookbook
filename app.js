@@ -1,4 +1,4 @@
-const APP_VERSION = "4-offline";
+const APP_VERSION = "5-mobile";
 const STORAGE = {
   recipes: `karisRecipeBook.recipes.${APP_VERSION}`,
   planner: `karisRecipeBook.planner.${APP_VERSION}`,
@@ -6,6 +6,23 @@ const STORAGE = {
 };
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+const CATEGORY_EMOJIS = {
+  dinner: "🍝",
+  breakfast: "🍳",
+  lunch: "🥪",
+  dessert: "🍰",
+  snack: "🍿",
+  "slow cooker": "🍲",
+  holiday: "🎄",
+  healthy: "🥗",
+  mexican: "🌮",
+  chicken: "🐔",
+  pasta: "🍝",
+  grill: "🔥",
+  soup: "🥣",
+  other: "📖"
+};
 
 const sampleRecipes = [
   {
@@ -56,12 +73,18 @@ function saveGrocerySelection() { saveJson(STORAGE.grocery, state.groceryRecipeI
 
 function cacheElements() {
   [
+    "pageTitle", "greetingText", "totalRecipesStat", "favoriteRecipesStat", "plannedMealsStat",
+    "homeCollections", "homeAddRecipeBtn", "fabAddRecipe", "recipeModal", "modalBackdrop", "closeModalBtn",
     "recipeForm", "editId", "formTitle", "saveBtn", "cancelEditBtn", "name", "category", "url",
     "ingredients", "instructions", "notes", "searchInput", "categoryChips", "categoryOptions",
-    "recipeList", "recipeCount", "clearSampleBtn", "plannerGrid", "clearPlannerBtn",
+    "recipeList", "recipeCount", "showAllRecipesBtn", "plannerGrid", "clearPlannerBtn",
     "groceryRecipeSelect", "addRecipeToGroceryBtn", "groceryFromPlannerBtn", "copyGroceryBtn",
     "selectedRecipes", "groceryList", "installBtn", "exportBackupBtn", "importBackupInput"
   ].forEach(id => el[id] = document.getElementById(id));
+}
+
+function getCategoryEmoji(category = "Other") {
+  return CATEGORY_EMOJIS[category.toLowerCase()] || "📖";
 }
 
 function cleanLines(value) {
@@ -72,9 +95,17 @@ function recipeById(id) {
   return state.recipes.find(recipe => String(recipe.id) === String(id));
 }
 
+function categoryCounts() {
+  const counts = {};
+  state.recipes.forEach(recipe => {
+    const category = recipe.category || "Other";
+    counts[category] = (counts[category] || 0) + 1;
+  });
+  return counts;
+}
+
 function uniqueCategories() {
-  const categories = state.recipes.map(recipe => recipe.category || "Other");
-  return ["All", "Favorites", ...Array.from(new Set(categories)).sort()];
+  return Object.keys(categoryCounts()).sort();
 }
 
 function recipeMatchesSearch(recipe, term) {
@@ -85,44 +116,64 @@ function recipeMatchesSearch(recipe, term) {
     recipe.ingredients.join(" "),
     recipe.instructions.join(" ")
   ].join(" ").toLowerCase();
-
   return searchableText.includes(term);
 }
 
 function getVisibleRecipes() {
   const term = el.searchInput.value.trim().toLowerCase();
-
   return state.recipes.filter(recipe => {
     const category = (recipe.category || "Other").toLowerCase();
     const filterMatch =
       state.activeFilter === "all" ||
       (state.activeFilter === "favorites" && recipe.favorite) ||
       category === state.activeFilter;
-
     return filterMatch && recipeMatchesSearch(recipe, term);
   });
 }
 
-function renderCategoryChips() {
+function renderStats() {
+  el.totalRecipesStat.textContent = state.recipes.length;
+  el.favoriteRecipesStat.textContent = state.recipes.filter(recipe => recipe.favorite).length;
+  el.plannedMealsStat.textContent = Object.values(state.planner).filter(Boolean).length;
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  el.greetingText.textContent = `${greeting} 👋`;
+}
+
+function makeCollectionButton(category, count, active = false) {
+  const button = document.createElement("button");
+  button.className = `collection-card card ${active ? "active" : ""}`;
+  button.innerHTML = `<span>${getCategoryEmoji(category)}</span><strong>${category}</strong><small>${count} ${count === 1 ? "recipe" : "recipes"}</small>`;
+  button.addEventListener("click", () => {
+    state.activeFilter = category.toLowerCase();
+    switchView("recipesView", "Recipes");
+    renderAll();
+  });
+  return button;
+}
+
+function renderCollections() {
+  const counts = categoryCounts();
+  const categories = uniqueCategories();
+  el.homeCollections.innerHTML = "";
   el.categoryChips.innerHTML = "";
   el.categoryOptions.innerHTML = "";
 
-  uniqueCategories().forEach(category => {
-    const filter = category.toLowerCase();
-    const button = document.createElement("button");
-    button.className = `chip ${state.activeFilter === filter ? "active" : ""}`;
-    button.textContent = category;
-    button.addEventListener("click", () => {
-      state.activeFilter = filter;
-      renderAll();
-    });
-    el.categoryChips.appendChild(button);
+  if (!categories.length) {
+    el.homeCollections.innerHTML = `<div class="card empty-state">🍴<br>Your cookbook is empty.</div>`;
+    el.categoryChips.innerHTML = `<div class="card empty-state">Add your first recipe to create collections.</div>`;
+    return;
+  }
 
-    if (!["All", "Favorites"].includes(category)) {
-      const option = document.createElement("option");
-      option.value = category;
-      el.categoryOptions.appendChild(option);
-    }
+  categories.slice(0, 4).forEach(category => {
+    el.homeCollections.appendChild(makeCollectionButton(category, counts[category]));
+  });
+
+  categories.forEach(category => {
+    el.categoryChips.appendChild(makeCollectionButton(category, counts[category], state.activeFilter === category.toLowerCase()));
+    const option = document.createElement("option");
+    option.value = category;
+    el.categoryOptions.appendChild(option);
   });
 }
 
@@ -132,16 +183,16 @@ function renderRecipes() {
   el.recipeCount.textContent = `${visibleRecipes.length} ${visibleRecipes.length === 1 ? "recipe" : "recipes"}`;
 
   if (!visibleRecipes.length) {
-    el.recipeList.innerHTML = `<div class="card empty-state">No recipes found. Add one or change your search.</div>`;
+    el.recipeList.innerHTML = `<div class="card empty-state">🍴<br>No recipes found.<br><br><button class="primary-btn" onclick="openRecipeModal()">Add Recipe</button></div>`;
     return;
   }
 
   const template = document.getElementById("recipeCardTemplate");
-
   visibleRecipes.forEach(recipe => {
     const clone = template.content.cloneNode(true);
     const source = clone.querySelector(".source-link");
 
+    clone.querySelector(".recipe-emoji").textContent = getCategoryEmoji(recipe.category);
     clone.querySelector("h3").textContent = recipe.name;
     clone.querySelector(".category-pill").textContent = recipe.category || "Other";
     clone.querySelector(".favorite-button").textContent = recipe.favorite ? "★" : "☆";
@@ -170,9 +221,29 @@ function appendListItems(parent, items, tagName) {
   });
 }
 
+function openRecipeModal() {
+  el.recipeModal.classList.remove("hidden");
+  el.recipeModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  setTimeout(() => el.name.focus(), 50);
+}
+
+function closeRecipeModal() {
+  el.recipeModal.classList.add("hidden");
+  el.recipeModal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+function resetForm() {
+  el.recipeForm.reset();
+  el.editId.value = "";
+  el.formTitle.textContent = "Add Recipe";
+  el.saveBtn.textContent = "Save Recipe";
+  el.cancelEditBtn.classList.add("hidden");
+}
+
 function addOrUpdateRecipe(event) {
   event.preventDefault();
-
   const editId = el.editId.value;
   const existing = editId ? recipeById(editId) : null;
   const id = editId ? Number(editId) : Date.now();
@@ -194,6 +265,8 @@ function addOrUpdateRecipe(event) {
 
   saveRecipes();
   resetForm();
+  closeRecipeModal();
+  switchView("recipesView", "Recipes");
   renderAll();
 }
 
@@ -208,19 +281,10 @@ function editRecipe(id) {
   el.ingredients.value = recipe.ingredients.join("\n");
   el.instructions.value = recipe.instructions.join("\n");
   el.notes.value = recipe.notes || "";
-
   el.formTitle.textContent = "Edit Recipe";
   el.saveBtn.textContent = "Update Recipe";
   el.cancelEditBtn.classList.remove("hidden");
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function resetForm() {
-  el.recipeForm.reset();
-  el.editId.value = "";
-  el.formTitle.textContent = "Add Recipe";
-  el.saveBtn.textContent = "Save Recipe";
-  el.cancelEditBtn.classList.add("hidden");
+  openRecipeModal();
 }
 
 function toggleFavorite(id) {
@@ -247,19 +311,12 @@ function copyRecipe(recipe) {
   navigator.clipboard.writeText(text);
 }
 
-function clearSample() {
-  state.recipes = state.recipes.filter(recipe => ![1, 2].includes(recipe.id));
-  saveRecipes();
-  renderAll();
-}
-
 function renderPlanner() {
   el.plannerGrid.innerHTML = "";
-
   DAYS.forEach(day => {
     const selectedId = state.planner[day] || "";
-    const card = document.createElement("div");
-    card.className = "day-card";
+    const card = document.createElement("article");
+    card.className = "day-card card";
     card.innerHTML = `
       <h3>${day}</h3>
       <select data-day="${day}">
@@ -272,7 +329,7 @@ function renderPlanner() {
     card.querySelector("select").addEventListener("change", event => {
       state.planner[day] = event.target.value;
       savePlanner();
-      renderPlanner();
+      renderAll();
     });
 
     el.plannerGrid.appendChild(card);
@@ -286,7 +343,6 @@ function renderGroceryControls() {
   state.groceryRecipeIds.forEach(id => {
     const recipe = recipeById(id);
     if (!recipe) return;
-
     const pill = document.createElement("button");
     pill.className = "selected-pill";
     pill.textContent = `${recipe.name} ×`;
@@ -301,18 +357,16 @@ function renderGroceryControls() {
 
 function buildGroceryItems() {
   const items = [];
-
   state.groceryRecipeIds.forEach(id => {
     const recipe = recipeById(id);
     if (recipe) items.push(...recipe.ingredients.map(item => item.trim().replace(/\s+/g, " ")));
   });
-
   return Array.from(new Set(items.filter(Boolean))).sort((a, b) => a.localeCompare(b));
 }
 
 function renderGroceryList() {
   const items = buildGroceryItems();
-  el.groceryList.innerHTML = items.length ? "" : `<div class="empty-state">Add recipes or build from your meal plan.</div>`;
+  el.groceryList.innerHTML = items.length ? "" : `<div class="card empty-state">🛒<br>Add recipes or build from your meal plan.</div>`;
 
   items.forEach(item => {
     const row = document.createElement("label");
@@ -350,7 +404,7 @@ function copyGrocery() {
 function clearPlanner() {
   state.planner = Object.fromEntries(DAYS.map(day => [day, ""]));
   savePlanner();
-  renderPlanner();
+  renderAll();
 }
 
 function exportBackup() {
@@ -388,8 +442,17 @@ async function importBackup(event) {
   renderAll();
 }
 
+function switchView(viewId, title) {
+  document.querySelectorAll(".view").forEach(view => view.classList.remove("active-view"));
+  document.getElementById(viewId).classList.add("active-view");
+  document.querySelectorAll(".nav-item").forEach(item => item.classList.toggle("active", item.dataset.view === viewId));
+  el.pageTitle.textContent = title;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
 function renderAll() {
-  renderCategoryChips();
+  renderStats();
+  renderCollections();
   renderRecipes();
   renderPlanner();
   renderGrocery();
@@ -397,22 +460,29 @@ function renderAll() {
 
 function registerEvents() {
   el.recipeForm.addEventListener("submit", addOrUpdateRecipe);
-  el.cancelEditBtn.addEventListener("click", resetForm);
+  el.cancelEditBtn.addEventListener("click", () => { resetForm(); closeRecipeModal(); });
+  el.closeModalBtn.addEventListener("click", () => { resetForm(); closeRecipeModal(); });
+  el.modalBackdrop.addEventListener("click", () => { resetForm(); closeRecipeModal(); });
   el.searchInput.addEventListener("input", renderRecipes);
-  el.clearSampleBtn.addEventListener("click", clearSample);
+  el.showAllRecipesBtn.addEventListener("click", () => { state.activeFilter = "all"; renderAll(); });
   el.clearPlannerBtn.addEventListener("click", clearPlanner);
   el.addRecipeToGroceryBtn.addEventListener("click", addRecipeToGrocery);
   el.groceryFromPlannerBtn.addEventListener("click", groceryFromPlanner);
   el.copyGroceryBtn.addEventListener("click", copyGrocery);
   el.exportBackupBtn.addEventListener("click", exportBackup);
   el.importBackupInput.addEventListener("change", importBackup);
+  el.homeAddRecipeBtn.addEventListener("click", openRecipeModal);
+  el.fabAddRecipe.addEventListener("click", openRecipeModal);
 
-  document.querySelectorAll(".tab").forEach(tab => {
-    tab.addEventListener("click", () => {
-      document.querySelectorAll(".tab").forEach(item => item.classList.remove("active"));
-      document.querySelectorAll(".view").forEach(view => view.classList.remove("active-view"));
-      tab.classList.add("active");
-      document.getElementById(tab.dataset.view).classList.add("active-view");
+  document.querySelectorAll(".nav-item").forEach(item => {
+    item.addEventListener("click", () => switchView(item.dataset.view, item.dataset.title));
+  });
+
+  document.querySelectorAll("[data-jump]").forEach(item => {
+    item.addEventListener("click", () => {
+      if (item.dataset.filter === "favorites") state.activeFilter = "favorites";
+      switchView(item.dataset.jump, item.dataset.jump === "recipesView" ? "Recipes" : item.textContent.trim());
+      renderAll();
     });
   });
 }
