@@ -18,82 +18,121 @@
       <div>
         <p class="eyebrow">Personal cookbook</p>
         <h1>Karis Recipe Book</h1>
-        <p class="subtitle">Save recipes from TikTok, YouTube, websites, or family notes.</p>
+        <p class="subtitle">Recipes, meal planning, favorites, and grocery lists in one simple PWA.</p>
       </div>
       <button id="installBtn" class="install-btn hidden">Install App</button>
     </header>
 
-    <section class="controls card">
-      <input id="searchInput" type="search" placeholder="Search recipes, ingredients, categories..." />
-      <div class="filter-row">
-        <button class="chip active" data-filter="all">All</button>
-        <button class="chip" data-filter="favorites">Favorites</button>
-        <button class="chip" data-filter="dinner">Dinner</button>
-        <button class="chip" data-filter="dessert">Dessert</button>
-        <button class="chip" data-filter="breakfast">Breakfast</button>
-      </div>
+    <nav class="tabs card" aria-label="App sections">
+      <button class="tab active" data-view="recipesView">Recipes</button>
+      <button class="tab" data-view="plannerView">Meal Planner</button>
+      <button class="tab" data-view="groceryView">Grocery List</button>
+    </nav>
+
+    <section id="recipesView" class="view active-view">
+      <section class="controls card">
+        <input id="searchInput" type="search" placeholder="Search recipes, ingredients, notes, categories..." />
+        <div id="categoryChips" class="filter-row"></div>
+      </section>
+
+      <main class="grid-layout">
+        <section class="card form-card">
+          <div class="section-title">
+            <div>
+              <h2 id="formTitle">Add Recipe</h2>
+              <p>Paste links, add photos, and save family tweaks.</p>
+            </div>
+            <button id="cancelEditBtn" class="ghost-btn hidden" type="button">Cancel edit</button>
+          </div>
+
+          <form id="recipeForm">
+            <input id="editId" type="hidden" />
+
+            <label>Recipe name
+              <input id="name" required placeholder="Creamy garlic chicken" />
+            </label>
+
+            <label>Category
+              <input id="category" list="categoryOptions" placeholder="Dinner" />
+              <datalist id="categoryOptions"></datalist>
+            </label>
+
+            <label>Source URL
+              <input id="url" type="url" placeholder="Paste TikTok, YouTube, Instagram, or website link" />
+            </label>
+
+            <label>Photo
+              <input id="photoInput" type="file" accept="image/*" />
+            </label>
+            <img id="photoPreview" class="photo-preview hidden" alt="Recipe photo preview" />
+
+            <label>Ingredients <span>one per line</span>
+              <textarea id="ingredients" rows="6" placeholder="2 chicken breasts\n1 cup heavy cream\n4 cloves garlic"></textarea>
+            </label>
+
+            <label>Instructions <span>one step per line</span>
+              <textarea id="instructions" rows="6" placeholder="Season chicken\nSear in skillet\nAdd cream and garlic\nSimmer 15 minutes"></textarea>
+            </label>
+
+            <label>Notes
+              <textarea id="notes" rows="3" placeholder="Family tweaks, serving ideas, substitutions..."></textarea>
+            </label>
+
+            <button id="saveBtn" class="primary-btn" type="submit">Save Recipe</button>
+          </form>
+        </section>
+
+        <section class="recipes-area">
+          <div class="section-title list-title">
+            <div>
+              <h2>Saved Recipes</h2>
+              <p id="recipeCount">0 recipes</p>
+            </div>
+            <button id="clearSampleBtn" class="ghost-btn">Clear sample</button>
+          </div>
+          <div id="recipeList" class="recipe-list"></div>
+        </section>
+      </main>
     </section>
 
-    <main class="grid-layout">
-      <section class="card form-card">
+    <section id="plannerView" class="view">
+      <section class="card planner-card">
         <div class="section-title">
-          <h2>Add Recipe</h2>
-          <p>Manual entry for version 1. AI import can come later.</p>
-        </div>
-
-        <form id="recipeForm">
-          <label>Recipe name
-            <input id="name" required placeholder="Creamy garlic chicken" />
-          </label>
-
-          <label>Category
-            <select id="category">
-              <option>Dinner</option>
-              <option>Breakfast</option>
-              <option>Lunch</option>
-              <option>Dessert</option>
-              <option>Snack</option>
-              <option>Slow Cooker</option>
-              <option>Holiday</option>
-              <option>Other</option>
-            </select>
-          </label>
-
-          <label>Source URL
-            <input id="url" type="url" placeholder="Paste TikTok, YouTube, Instagram, or website link" />
-          </label>
-
-          <label>Ingredients <span>one per line</span>
-            <textarea id="ingredients" rows="6" placeholder="2 chicken breasts\n1 cup heavy cream\n4 cloves garlic"></textarea>
-          </label>
-
-          <label>Instructions <span>one step per line</span>
-            <textarea id="instructions" rows="6" placeholder="Season chicken\nSear in skillet\nAdd cream and garlic\nSimmer 15 minutes"></textarea>
-          </label>
-
-          <label>Notes
-            <textarea id="notes" rows="3" placeholder="Family tweaks, serving ideas, substitutions..."></textarea>
-          </label>
-
-          <button class="primary-btn" type="submit">Save Recipe</button>
-        </form>
-      </section>
-
-      <section class="recipes-area">
-        <div class="section-title list-title">
           <div>
-            <h2>Saved Recipes</h2>
-            <p id="recipeCount">0 recipes</p>
+            <h2>Weekly Meal Planner</h2>
+            <p>Pick recipes for each day, then generate a matching grocery list.</p>
           </div>
-          <button id="clearSampleBtn" class="ghost-btn">Clear sample</button>
+          <button id="clearPlannerBtn" class="ghost-btn">Clear week</button>
         </div>
-        <div id="recipeList" class="recipe-list"></div>
+        <div id="plannerGrid" class="planner-grid"></div>
       </section>
-    </main>
+    </section>
+
+    <section id="groceryView" class="view">
+      <section class="card grocery-card">
+        <div class="section-title">
+          <div>
+            <h2>Grocery List</h2>
+            <p>Build from selected recipes or your meal plan.</p>
+          </div>
+          <div class="button-row">
+            <button id="groceryFromPlannerBtn" class="ghost-btn">From meal plan</button>
+            <button id="copyGroceryBtn" class="ghost-btn">Copy list</button>
+          </div>
+        </div>
+        <div class="grocery-builder">
+          <select id="groceryRecipeSelect"></select>
+          <button id="addRecipeToGroceryBtn" class="primary-btn small">Add Recipe</button>
+        </div>
+        <div id="selectedRecipes" class="selected-recipes"></div>
+        <div id="groceryList" class="grocery-list"></div>
+      </section>
+    </section>
   </div>
 
   <template id="recipeCardTemplate">
     <article class="recipe-card card">
+      <div class="photo-wrap"><img class="recipe-photo" alt="Recipe photo" /></div>
       <div class="recipe-top">
         <div>
           <p class="category-pill"></p>
@@ -113,6 +152,7 @@
       <p class="notes"></p>
       <div class="card-actions">
         <button class="copy-btn">Copy</button>
+        <button class="edit-btn">Edit</button>
         <button class="delete-btn">Delete</button>
       </div>
     </article>

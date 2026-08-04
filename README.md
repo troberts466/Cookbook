@@ -1,26 +1,29 @@
-# Karis Recipe Book PWA
+# Karis Recipe Book PWA v2
 
-A simple mobile-friendly recipe book Progressive Web App.
+This version adds the next practical app features:
 
-## Files
+- Recipe photos
+- Edit recipes
+- Delete recipes
+- Favorites
+- Dynamic category filters
+- Search by name, category, notes, ingredients, and instructions
+- Weekly meal planner
+- Grocery list generator from selected recipes
+- Grocery list generator from meal plan
+- Copy recipe and copy grocery list
+- Offline support through service worker
+- Installable PWA setup
 
-- `index.html` - app markup
-- `style.css` - app styling
-- `app.js` - recipe saving, search, filters, favorites, copy, delete
-- `manifest.json` - PWA install settings
-- `sw.js` - offline cache service worker
-- `icons/` - app icons
+## Upload to GitHub Pages
 
-## GitHub Pages Upload
-
-1. Create a GitHub repository named `karis-recipe-book`.
-2. Upload everything from this folder to the root of the repository.
+1. Unzip this package.
+2. Upload the contents to the root of your GitHub repository.
 3. Go to **Settings > Pages**.
-4. Under **Build and deployment**, select **Deploy from a branch**.
-5. Select the `main` branch and `/root`, then save.
+4. Select **Deploy from branch**.
+5. Select `main` and `/root`.
+6. Save.
 
-Your app will publish at your GitHub Pages site for that repository.
+## Important note about storage
 
-## Notes
-
-This version stores recipes in the browser with `localStorage`. Data stays on the device/browser being used. A future version can add Firebase or another backend to sync between devices.
+Recipes are stored in the browser with `localStorage`. That means the app works offline, but the data is tied to the device/browser. A later version can add Firebase or Supabase for account sync across devices.

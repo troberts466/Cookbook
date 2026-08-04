@@ -1,7 +1,7 @@
 {
   "name": "Karis Recipe Book",
   "short_name": "Recipes",
-  "description": "A personal recipe book PWA for saving family recipes and favorite links.",
+  "description": "A personal recipe book PWA with recipe saving, photos, favorites, meal planning, and grocery lists.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
