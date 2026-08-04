@@ -1,15 +1,13 @@
 // Firebase is optional. The app works locally without this.
 // To enable Version 4 cloud sync, replace null with your Firebase web app config.
 
-window.KARIS_FIREBASE_CONFIG = null;
 
-/* Example:
 window.KARIS_FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBP_q-JCgxJRb_vYwRYNci_1o0CTQ9jgzc",
+  authDomain: "karis-recipe-book.firebaseapp.com",
+  projectId: "karis-recipe-book",
+  storageBucket: "karis-recipe-book.firebasestorage.app",
+  messagingSenderId: "285405936514",
+  appId: "1:285405936514:web:123b2a6e54d470fff3ad9b"
 };
-*/
+
