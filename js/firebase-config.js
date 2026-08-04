@@ -6,8 +6,5 @@ window.KARIS_FIREBASE_CONFIG = {
   apiKey: "AIzaSyBP_q-JCgxJRb_vYwRYNci_1o0CTQ9jgzc",
   authDomain: "karis-recipe-book.firebaseapp.com",
   projectId: "karis-recipe-book",
-  storageBucket: "karis-recipe-book.firebasestorage.app",
-  messagingSenderId: "285405936514",
   appId: "1:285405936514:web:123b2a6e54d470fff3ad9b"
 };
-
