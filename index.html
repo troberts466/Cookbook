@@ -18,7 +18,7 @@
       <div>
         <p class="eyebrow">Personal cookbook</p>
         <h1>Karis Recipe Book</h1>
-        <p class="subtitle">Recipes, meal planning, favorites, and grocery lists in one simple PWA.</p>
+        <p class="subtitle">Recipes, photos, meal planning, grocery lists, and backup tools.</p>
       </div>
       <button id="installBtn" class="install-btn hidden">Install App</button>
     </header>
@@ -27,6 +27,7 @@
       <button class="tab active" data-view="recipesView">Recipes</button>
       <button class="tab" data-view="plannerView">Meal Planner</button>
       <button class="tab" data-view="groceryView">Grocery List</button>
+      <button class="tab" data-view="backupView">Backup</button>
     </nav>
 
     <section id="recipesView" class="view active-view">
@@ -40,7 +41,7 @@
           <div class="section-title">
             <div>
               <h2 id="formTitle">Add Recipe</h2>
-              <p>Paste links, add photos, and save family tweaks.</p>
+              <p>Photos are stored in IndexedDB instead of localStorage.</p>
             </div>
             <button id="cancelEditBtn" class="ghost-btn hidden" type="button">Cancel edit</button>
           </div>
@@ -128,6 +129,36 @@
         <div id="groceryList" class="grocery-list"></div>
       </section>
     </section>
+
+    <section id="backupView" class="view">
+      <section class="card backup-card">
+        <div class="section-title">
+          <div>
+            <h2>Backup and Sync</h2>
+            <p>Export/import backups now. Firebase sync is scaffolded for later setup.</p>
+          </div>
+        </div>
+
+        <div class="backup-grid">
+          <article class="backup-panel">
+            <h3>Local backup</h3>
+            <p>Download a JSON backup that includes recipes, planner data, grocery selections, and images.</p>
+            <div class="button-row left">
+              <button id="exportBackupBtn" class="primary-btn small">Export backup</button>
+              <label class="file-button">Import backup
+                <input id="importBackupInput" type="file" accept="application/json" />
+              </label>
+            </div>
+          </article>
+
+          <article class="backup-panel">
+            <h3>Cloud sync placeholder</h3>
+            <p>This app includes a clean Firebase-ready structure, but Firebase is disabled until you add your project config.</p>
+            <pre><code>js/firebase-config.js</code></pre>
+          </article>
+        </div>
+      </section>
+    </section>
   </div>
 
   <template id="recipeCardTemplate">
@@ -158,6 +189,8 @@
     </article>
   </template>
 
+  <script src="js/idb.js"></script>
+  <script src="js/firebase-config.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
