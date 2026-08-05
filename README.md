@@ -1,12 +1,6 @@
-# Karis Recipe Book PWA v6 Import
+# Karis Recipe Book PWA v6.5 Smart Import
 
-This version includes the mobile-first UI plus website recipe importing through your Cloudflare Worker.
-
-## Import Worker
-
-The app is already configured to use:
-
-https://recipe-importer.troberts466.workers.dev/
+This version removes the Cloudflare Worker and replaces website scraping with a reliable smart manual import workflow.
 
 ## Included Features
 
@@ -15,9 +9,8 @@ https://recipe-importer.troberts466.workers.dev/
 - Bottom navigation bar
 - Floating add recipe button
 - Slide-up recipe editor
-- Import recipe from website URL
+- Smart manual import: paste source URL, open source page, paste copied recipe text, parse into recipe form
 - Collection/category cards
-- Recipe cards with category icons
 - Add, edit, delete, favorite, and copy recipes
 - Search recipes
 - Weekly meal planner
@@ -27,10 +20,11 @@ https://recipe-importer.troberts466.workers.dev/
 - Installable PWA
 - Offline support
 
-## Not included
+## Removed
 
+- Cloudflare Worker dependency
+- Automatic website scraping
 - Firebase
-- Cloud sync
 - Recipe photos
 
 ## GitHub Pages Upload
@@ -40,6 +34,6 @@ https://recipe-importer.troberts466.workers.dev/
 3. Commit the changes.
 4. GitHub Pages will serve the updated app.
 
-## Notes
+## Cloudflare
 
-Website import depends on the Cloudflare Worker. If a recipe site does not expose structured recipe data or blocks access, the import may fail. Manual entry still works.
+You can delete the Cloudflare Worker if you do not plan to use automatic URL scraping again. This version does not call it.
