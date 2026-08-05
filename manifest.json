@@ -1,7 +1,7 @@
 {
   "name": "Karis Recipe Book",
   "short_name": "Recipes",
-  "description": "A mobile-first offline recipe book PWA with recipes, meal planning, grocery lists, and backup tools.",
+  "description": "A mobile-first offline recipe book PWA with website recipe import.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
